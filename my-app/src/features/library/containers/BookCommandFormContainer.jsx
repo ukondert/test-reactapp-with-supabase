@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createBorrowBookCommand, createReturnBookCommand } from '../store/bookCommands';
-import { invokeAggregateCommand } from '../api/aggregateCommandApi';
+import { invokeAggregateCommand } from '../../../core/api/aggregateCommandApi';
 import BookCommandForm from '../components/BookCommandForm';
 
 const BookCommandFormContainer = () => {

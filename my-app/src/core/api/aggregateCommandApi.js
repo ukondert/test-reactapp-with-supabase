@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from '../../../core/api/endpoints';
+import { API_ENDPOINTS } from './endpoints';
 
 export async function invokeAggregateCommand(command) {
   const apiKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
