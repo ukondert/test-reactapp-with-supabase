@@ -4,6 +4,9 @@
 !.env.example
 !my-app/.env.example
 
+# Supabase secrets
+supabase/.access_token
+
 # Node dependencies
 node_modules/
 my-app/node_modules/

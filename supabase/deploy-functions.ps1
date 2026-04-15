@@ -3,6 +3,11 @@ param(
   [string]$TokenFile = $env:SUPABASE_ACCESS_TOKEN_FILE
 )
 
+$setEnvScript = Join-Path $PSScriptRoot 'set-env.ps1'
+if (Test-Path $setEnvScript) {
+  . $setEnvScript
+}
+
 if (-not $ProjectRef -and $args.Length -ge 1) {
   $ProjectRef = $args[0]
 }
@@ -25,7 +30,7 @@ if (-not (Test-Path $TokenFile)) {
 }
 
 try {
-  $rawLines = Get-Content $TokenFile -ErrorAction Stop | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' }
+  $rawLines = @(Get-Content $TokenFile -ErrorAction Stop | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' })
 } catch {
   Write-Error "Failed to read token file: $_"
   exit 1
@@ -63,13 +68,18 @@ if ($functionFolders.Count -eq 0) {
 
 Write-Host "Deploying Supabase Edge Functions for project ref: $ProjectRef"
 
-foreach ($fnName in $functionFolders) {
-  Write-Host "`nDeploying function: $fnName"
-  $exitCode = & npx supabase functions deploy $fnName --project-ref $ProjectRef
-  if ($LASTEXITCODE -ne 0) {
-    Write-Error "Deployment failed for function: $fnName"
-    exit $LASTEXITCODE
+Push-Location (Join-Path $PSScriptRoot '..')
+try {
+  foreach ($fnName in $functionFolders) {
+    Write-Host "`nDeploying function: $fnName"
+    & npx supabase functions deploy $fnName --project-ref $ProjectRef
+    if ($LASTEXITCODE -ne 0) {
+      Write-Error "Deployment failed for function: $fnName"
+      exit $LASTEXITCODE
+    }
   }
+} finally {
+  Pop-Location
 }
 
 Write-Host '`nAll functions deployed successfully.'

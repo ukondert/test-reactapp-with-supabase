@@ -8,7 +8,9 @@
     "build": "vite build",
     "serve": "vite preview",
     "deploy:functions": "node supabase/deploy-functions.js",
-    "deploy:functions:ps": "pwsh -File supabase/deploy-functions.ps1"
+    "deploy:functions:ps": "pwsh -File supabase/deploy-functions.ps1",
+    "deploy:db-function": "node supabase/deploy-db-function.js",
+    "deploy:db-function:ps": "pwsh -File supabase/deploy-db-function.ps1"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.1",

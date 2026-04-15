@@ -24,30 +24,61 @@ The UI supports:
 - `src/api/aggregateCommandApi.js`: sends POST requests to the aggregate command endpoint
 - `src/supabaseClient.js`: creates the Supabase client from environment variables
 
+## DDD auf Supabase
+
+Die folgende Tabelle zeigt, wie klassische DDD-Schichten (z. B. aus Spring Boot) auf Supabase-Konzepte abgebildet werden:
+
+| Klassischer Layer (Spring Boot) | Supabase Äquivalent | Funktion |
+|---|---|---|
+| Controller | Edge Function (HTTP Listener) | Nimmt den Request entgegen, validiert das Format (JSON). |
+| Application Service | Edge Function Logic | Orchestriert den Ablauf: Lädt Daten, ruft Domänen-Logik auf. |
+| Repository (Fetch) | Supabase Client (PostgREST) | `supabase.from('table').select(...)` ersetzt das Repository-Interface. |
+| Aggregate Root / Logic | Domain Logic / PL/pgSQL | Die eigentliche Invarianten-Prüfung (im Code oder als DB-Funktion). |
+| Persistence (Save) | RPC (Postgres Function) | Garantiert die atomare Speicherung des gesamten Aggregates. |
+
 ## Project Structure
 
 ```
 my-app/
 ├── public/
 ├── src/
-│   ├── api/
-│   │   ├── aggregateCommandApi.js
-│   │   └── endpoints.js
+│   ├── assets/
 │   ├── components/
-│   │   ├── BookCommandForm.jsx
-│   │   ├── BookCommandFormContainer.jsx
-│   │   └── SupabaseHealthCheck.jsx
-│   ├── domain/
-│   │   └── commands/
-│   │       └── bookCommands.js
+│   │   └── SupabaseHealthCheck.jsx     # shared component
+│   ├── core/
+│   │   ├── api/
+│   │   │   ├── endpoints.js
+│   │   │   └── healthApi.js
+│   │   └── supabaseClient.js
+│   ├── features/
+│   │   └── library/
+│   │       ├── api/
+│   │       │   └── aggregateCommandApi.js
+│   │       ├── components/
+│   │       │   └── BookCommandForm.jsx    # dumb component
+│   │       ├── containers/
+│   │       │   └── BookCommandFormContainer.jsx  # smart component
+│   │       ├── hooks/
+│   │       ├── store/
+│   │       │   ├── bookAggregate.js
+│   │       │   └── bookCommands.js
+│   │       ├── types/
+│   │       └── index.js                  # public API of the feature
+│   ├── layouts/
+│   ├── views/
 │   ├── App.jsx
-│   ├── main.jsx
-│   └── supabaseClient.js
+│   └── main.jsx
 ├── supabase/
+│   ├── db-functions/
+│   │   ├── borrow_book.sql
+│   │   └── return_book.sql
+│   ├── functions/
+│   │   └── library-aggregate/
+│   │       └── index.ts
 │   ├── deploy-functions.js
-│   └── functions/
-│       └── library-aggregate/
-│           └── index.ts
+│   ├── deploy-functions.ps1
+│   ├── deploy-db-function.js
+│   └── deploy-db-function.ps1
 ├── .env.example
 ├── package.json
 ├── vite.config.js
@@ -119,17 +150,52 @@ npm run build
 npm run serve
 ```
 
+### Access Token for deployment
+
+Create `my-app/supabase/.access_token` and add your Supabase access token (from the [Supabase Dashboard → Account → Access Tokens](https://supabase.com/dashboard/account/tokens)):
+
+```
+your-access-token-here
+```
+
 ### Deploy Supabase Edge Functions
 
+Deploys all Edge Function folders found under `supabase/functions/`.
+
 ```bash
+# Node.js
 npm run deploy:functions -- <project-ref>
+
+# or with env var
+$env:SUPABASE_PROJECT_REF="your-project-ref"
+npm run deploy:functions
+
+# PowerShell
+npm run deploy:functions:ps -- -ProjectRef your-project-ref
 ```
 
-or with env var:
+### Deploy a Postgres DB Function
+
+Deploys a single SQL file from `supabase/db-functions/` by name.
 
 ```bash
-SUPABASE_PROJECT_REF=your-project-ref npm run deploy:functions
+# Node.js – file name without .sql extension
+npm run deploy:db-function -- borrow_book <project-ref>
+
+# or with env var
+$env:SUPABASE_PROJECT_REF="your-project-ref"
+npm run deploy:db-function -- borrow_book
+
+# PowerShell
+npm run deploy:db-function:ps -- -SqlFile borrow_book -ProjectRef your-project-ref
 ```
+
+Available DB functions:
+
+| File | Function | Description |
+|---|---|---|
+| `borrow_book.sql` | `borrow_book(p_book_id, p_borrower_id)` | Validates loan limit (max 3), checks availability, creates loan atomically |
+| `return_book.sql` | `return_book(p_book_id, p_borrower_id)` | Closes active loan, restores available copies atomically |
 
 ## Notes
 
