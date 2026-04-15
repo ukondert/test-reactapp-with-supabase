@@ -1,0 +1,26 @@
+{
+  "name": "my-app",
+  "version": "1.0.0",
+  "description": "A web application using React, Vite, and Supabase.",
+  "main": "src/main.jsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "deploy:functions": "node supabase/deploy-functions.js",
+    "deploy:functions:ps": "pwsh -File supabase/deploy-functions.ps1"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "supabase": "^2.91.1",
+    "vite": "^8.0.8"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

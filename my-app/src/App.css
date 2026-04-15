@@ -1,0 +1,77 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+}
+
+.status {
+    font-size: 1.5rem;
+    margin-top: 20px;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}
+
+.book-command-form {
+    margin-top: 24px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 520px;
+    width: 100%;
+    background: #fafafa;
+}
+
+.book-command-form h2 {
+    margin-top: 0;
+}
+
+.book-command-form .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.book-command-form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.book-command-form .button-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.book-command-form button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #0070f3;
+    color: white;
+    cursor: pointer;
+}
+
+.book-command-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.book-command-form .status-message {
+    margin-top: 14px;
+    font-size: 0.95rem;
+}
