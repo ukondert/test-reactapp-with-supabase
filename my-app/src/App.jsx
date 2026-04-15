@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import SupabaseHealthCheck from './components/SupabaseHealthCheck';
-import BookCommandFormContainer from './components/BookCommandFormContainer';
+import { BookCommandFormContainer } from './features/library';
 
 function App() {
   return (

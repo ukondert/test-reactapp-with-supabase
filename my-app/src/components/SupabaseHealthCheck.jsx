@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getHealthStatus } from '../api/healthApi';
+import { getHealthStatus } from '../core/api/healthApi';
 
 const SupabaseHealthCheck = () => {
     const [status, setStatus] = useState('Verbindung wird geprüft...');

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { createBorrowBookCommand, createReturnBookCommand } from '../domain/commands/bookCommands';
+import { createBorrowBookCommand, createReturnBookCommand } from '../store/bookCommands';
 import { invokeAggregateCommand } from '../api/aggregateCommandApi';
-import BookCommandForm from './BookCommandForm';
+import BookCommandForm from '../components/BookCommandForm';
 
 const BookCommandFormContainer = () => {
   const [bookId, setBookId] = useState('');
