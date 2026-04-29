@@ -1,16 +1,8 @@
 {
     "servers": {
-        "mcp-server-time": {
-            "command": "python",
-            "args": [
-                "-m",
-                "mcp_server_time",
-                "--local-timezone=America/Los_Angeles"
-            ],
-            "env": {}
-        },
-        "supabase": {
-            "url": "https://mcp.supabase.com/mcp"
+       "supabase": {
+        "type": "http",
+        "url": "https://mcp.supabase.com/mcp"
         }
     }
 }

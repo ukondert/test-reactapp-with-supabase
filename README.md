@@ -1,4 +1,4 @@
-# Digital School Library
+# Beispielprojekt Supabase Projekt mit CDD und DDD Ansatz
 
 ## Overview
 
@@ -6,15 +6,19 @@ This project is a small React application built with Vite that connects to Supab
 
 The UI supports:
 - command-based borrowing and returning of books
-- Supabase health checks
+- Supabase health 
 - a smart/dumb component separation for the book command form
 
 ## Tech Stack
 
-- React 17
-- Vite
-- Supabase JavaScript client
+- React 17 (Web)
+- React Native 0.79 + Expo SDK 54 (Mobile)
+- Vite (Web bundler/dev server)
+- Supabase JavaScript client (Web)
+- Supabase REST API via `fetch` (Mobile)
 - Supabase Edge Functions
+- Supabase PL/pgSQL Functions (RPC)
+- Shared UI workspace package (`@shared/ui`) for cross-platform components
 
 ## Key Features
 
@@ -90,8 +94,13 @@ my-app/
 ### 1. Install dependencies
 
 ```bash
-cd my-app
 npm install
+```
+
+Install web dependencies from repository root:
+
+```bash
+npm run install:web
 ```
 
 ### 2. Configure environment variables
@@ -112,10 +121,72 @@ SUPABASE_PROJECT_REF=your-project-ref
 ### 3. Run locally
 
 ```bash
+npm run dev:web
+```
+
+or from `my-app`:
+
+```bash
+cd my-app
 npm run dev
 ```
 
 Open the app at the local URL shown in the terminal.
+
+### 4. Run the mobile app (Expo)
+
+Set the required Expo env variables in `my-mobile-app/.env` first:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-public-anon-key
+```
+
+Notes:
+
+- `EXPO_PUBLIC_SUPABASE_URL` must be the plain project URL, for example `https://<project-ref>.supabase.co`.
+- Do not append paths like `/auth/v1`, `/auth/v1/health`, or `/functions/v1`.
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` is required for the `apikey` and `Authorization` headers used by the mobile health check.
+
+Then start Expo from workspace root:
+
+```bash
+npm run install:mobile
+npm run dev:mobile
+```
+
+## Shared Components: Web + Mobile
+
+This repository now includes a shared UI workspace package:
+
+- `shared/ui`
+
+Current shared component:
+
+- `StatusMessage` used by:
+  - `my-app/src/components/SupabaseHealthCheck.jsx`
+  - `my-mobile-app/App.js`
+
+How cross-platform rendering works:
+
+- Web implementation: `shared/ui/src/components/StatusMessage/StatusMessage.web.jsx`
+- Native implementation: `shared/ui/src/components/StatusMessage/StatusMessage.native.jsx`
+
+This enables one stable import path (`@shared/ui`) while each platform resolves its own UI implementation.
+
+## Reuse Strategies
+
+When sharing between React (web) and React Native, use one of these patterns:
+
+1. Platform file split (`*.web.*`, `*.native.*`) for visual components.
+2. Shared pure JS modules (formatters, validators, command builders) for domain logic.
+3. Adapter layer per platform for API/network differences while keeping shared feature contracts.
+
+Recommended in this repo:
+
+- Keep feature command flow logic and payload contract stable.
+- Move new reusable UI primitives into `shared/ui`.
+- Keep orchestration/container logic platform-specific unless runtime constraints are identical.
 
 ## Supabase Edge Function
 
@@ -150,12 +221,29 @@ npm run build
 npm run serve
 ```
 
+### Use Supabase CLI via npx
+
+If you do not want to install the Supabase CLI globally, use `npx`:
+
+```bash
+npx supabase login
+npx supabase projects list
+```
+
+This lets you run the CLI from the project without a global install.
+
 ### Access Token for deployment
 
-Create `my-app/supabase/.access_token` and add your Supabase access token (from the [Supabase Dashboard → Account → Access Tokens](https://supabase.com/dashboard/account/tokens)):
+Create `my-app/supabase/.access_token` and add your Supabase access token.
+
+Access tokens are available in the Supabase dashboard at:
+
+- https://supabase.com/dashboard/account/tokens
+
+The file can contain either the raw token or a key/value line like:
 
 ```
-your-access-token-here
+SUPABASE_ACCESS_TOKEN=your-access-token-here
 ```
 
 ### Deploy Supabase Edge Functions

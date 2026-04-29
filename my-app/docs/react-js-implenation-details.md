@@ -2,7 +2,13 @@
 
 ## Projektübersicht
 
-Dieses Vite-React-Projekt ist als einfache React-Anwendung konfiguriert, die Supabase zur Backend-Anbindung verwendet. Die wichtigsten Bereiche sind:
+Dieses Projekt ist als npm-Workspace mit Web-App, Mobile-App und Shared-UI konfiguriert. Die wichtigsten Bereiche sind:
+
+- `my-app` fuer die Vite-Web-App
+- `my-mobile-app` fuer die Expo/React-Native-App
+- `shared/ui` fuer plattformuebergreifende Komponenten
+
+Die wichtigsten Bereiche der Web-App sind:
 
 - `package.json` für Abhängigkeiten und npm-Skripte
 - `vite.config.js` für Entwicklungsserver und Build-Settings
@@ -11,6 +17,22 @@ Dieses Vite-React-Projekt ist als einfache React-Anwendung konfiguriert, die Sup
 - `src/App.jsx` als Hauptkomponente
 - `src/supabaseClient.js` als zentrale Supabase-Client-Konfiguration
 - `src/components/SupabaseHealthCheck.jsx` als Verbindungsprüfung
+
+---
+
+## Plattformuebergreifende Komponenten
+
+Wiederverwendbare UI-Komponenten liegen in `shared/ui` und werden ueber den Paketnamen `@shared/ui` importiert.
+
+Beispiel aus diesem Projekt:
+
+- `StatusMessage`
+  - Web: `shared/ui/src/components/StatusMessage/StatusMessage.web.jsx`
+  - Native: `shared/ui/src/components/StatusMessage/StatusMessage.native.jsx`
+
+Die Web-App nutzt in `vite.config.js` einen Alias auf `../shared/ui/src` und erweitert `resolve.extensions`, damit Web-Varianten (`.web.jsx`) automatisch aufgeloest werden.
+
+Die Mobile-App nutzt Metro mit Workspace-Watch-Foldern, damit `@shared/ui` aus dem Monorepo importiert werden kann.
 
 ---
 

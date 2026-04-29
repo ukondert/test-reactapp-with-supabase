@@ -8,11 +8,36 @@ if (Test-Path $setEnvScript) {
   . $setEnvScript
 }
 
+$dotenvPath = Join-Path $PSScriptRoot '.env.deploy'
+$dotenv = @{}
+if (Test-Path $dotenvPath) {
+  try {
+    Get-Content $dotenvPath -Encoding UTF8 -ErrorAction Stop | ForEach-Object {
+      $line = $_.Trim()
+      if (-not [string]::IsNullOrWhiteSpace($line) -and -not $line.StartsWith('#')) {
+        if ($line -match '^(?<key>[^=]+?)\s*=\s*(?<value>.*)$') {
+          $dotenv[$matches['key'].Trim()] = $matches['value'].Trim('"').Trim()
+        }
+      }
+    }
+  } catch {
+    Write-Warning "Failed to read .env.deploy: $_"
+  }
+}
+
 if (-not $ProjectRef -and $args.Length -ge 1) {
   $ProjectRef = $args[0]
 }
 
-if (-not $TokenFile) {
+if (-not $ProjectRef -and $dotenv.ContainsKey('SUPABASE_PROJECT_REF')) {
+  $ProjectRef = $dotenv['SUPABASE_PROJECT_REF']
+}
+
+if ($dotenv.ContainsKey('SUPABASE_ACCESS_TOKEN')) {
+  $TokenFile = $dotenv['SUPABASE_ACCESS_TOKEN'].Trim()
+}
+
+if ([string]::IsNullOrWhiteSpace($TokenFile)) {
   $TokenFile = Join-Path $PSScriptRoot '.access_token'
 }
 
@@ -24,13 +49,25 @@ if (-not $ProjectRef) {
 }
 
 if (-not (Test-Path $TokenFile)) {
+  if ($dotenv.ContainsKey('SUPABASE_ACCESS_TOKEN')) {
+    try {
+      $dotenv['SUPABASE_ACCESS_TOKEN'] | Out-File -FilePath $TokenFile -Encoding UTF8NoBOM -NoNewline
+      Write-Host "Created access token file from .env.deploy: $TokenFile"
+    } catch {
+      Write-Error "Failed to write token file from .env.deploy: $_"
+      exit 1
+    }
+  }
+}
+
+if (-not (Test-Path $TokenFile)) {
   Write-Error "Missing access token file: $TokenFile"
   Write-Host 'Create the file and add your Supabase access token there.'
   exit 1
 }
 
 try {
-  $rawLines = @(Get-Content $TokenFile -ErrorAction Stop | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' })
+  $rawLines = @(Get-Content $TokenFile -Encoding UTF8 -ErrorAction Stop | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' })
 } catch {
   Write-Error "Failed to read token file: $_"
   exit 1

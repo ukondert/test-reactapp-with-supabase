@@ -1,0 +1,11 @@
+{
+  "name": "test-reactapp-with-supabase",
+  "private": true,
+  "scripts": {
+    "install:web": "npm --prefix my-app install",
+    "install:mobile": "npm --prefix my-mobile-app install",
+    "dev:web": "npm --prefix my-app run dev",
+    "dev:mobile": "npm --prefix my-mobile-app run start",
+    "build:web": "npm --prefix my-app run build"
+  }
+}

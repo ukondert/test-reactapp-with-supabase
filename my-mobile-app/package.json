@@ -1,0 +1,22 @@
+{
+  "name": "my-mobile-app",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@shared/ui": "file:../shared/ui",
+    "expo": "^54.0.34",
+    "expo-status-bar": "~2.2.3",
+    "react": "19.0.0",
+    "react-native": "0.79.2"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "~13.2.4"
+  }
+}

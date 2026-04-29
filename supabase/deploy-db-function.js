@@ -79,14 +79,15 @@ const sql = fs.readFileSync(sqlFilePath, 'utf8');
 
 // ── Deploy via Supabase Management API ───────────────────────────────────────
 const bodyStr = JSON.stringify({ query: sql });
+const body = Buffer.from(bodyStr, 'utf8');
 const options = {
   hostname: 'api.supabase.com',
   path: `/v1/projects/${projectRef}/database/query`,
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${accessToken}`,
-    'Content-Type':  'application/json',
-    'Content-Length': Buffer.byteLength(bodyStr),
+    'Content-Type':  'application/json; charset=utf-8',
+    'Content-Length': body.length,
   },
 };
 
@@ -111,5 +112,5 @@ req.on('error', (err) => {
   process.exit(1);
 });
 
-req.write(bodyStr);
+req.write(body);
 req.end();

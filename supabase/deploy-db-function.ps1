@@ -49,7 +49,7 @@ if (-not (Test-Path $TokenFile)) {
 }
 
 try {
-  $rawLines = @(Get-Content $TokenFile -ErrorAction Stop |
+  $rawLines = @(Get-Content $TokenFile -Encoding UTF8 -ErrorAction Stop |
     ForEach-Object { $_.Trim() } |
     Where-Object { $_ -ne '' })
 } catch {
@@ -75,7 +75,7 @@ if (-not $AccessToken) {
 
 # ── Read SQL ──────────────────────────────────────────────────────────────────
 try {
-  $sql = [System.IO.File]::ReadAllText($SqlFile)
+  $sql = [System.IO.File]::ReadAllText($SqlFile, [System.Text.Encoding]::UTF8)
 } catch {
   Write-Error "Failed to read SQL file: $_"
   exit 1
@@ -85,15 +85,16 @@ try {
 $uri     = "https://api.supabase.com/v1/projects/$ProjectRef/database/query"
 $headers = @{
   'Authorization' = "Bearer $AccessToken"
-  'Content-Type'  = 'application/json'
+  'Content-Type'  = 'application/json; charset=utf-8'
 }
-$body = [PSCustomObject]@{ query = $sql } | ConvertTo-Json -Compress -Depth 10
+$bodyJson  = [PSCustomObject]@{ query = $sql } | ConvertTo-Json -Compress -Depth 10
+$bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)
 
 Write-Host "Deploying DB function from: $SqlFile"
 Write-Host "Project ref: $ProjectRef"
 
 try {
-  $response = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -Body $body -ErrorAction Stop
+  $response = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -Body $bodyBytes -ContentType 'application/json; charset=utf-8' -ErrorAction Stop
   Write-Host 'DB function deployed successfully.'
 } catch {
   $statusCode = $_.Exception.Response.StatusCode.value__

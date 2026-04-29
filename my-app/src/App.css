@@ -75,3 +75,20 @@ h1 {
     margin-top: 14px;
     font-size: 0.95rem;
 }
+
+.status-message {
+    margin-top: 14px;
+    font-size: 1rem;
+}
+
+.status-message.success {
+    color: #116932;
+}
+
+.status-message.error {
+    color: #b00020;
+}
+
+.status-message.info {
+    color: #1f2937;
+}

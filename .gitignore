@@ -32,6 +32,15 @@ my-app/coverage/
 .vite/
 my-app/.vite/
 
+# Expo local state and export artifacts
+my-mobile-app/.expo/
+my-mobile-app/.expo-shared/
+my-mobile-app/.expo-export-test/
+
+# Supabase local temp/session artifacts
+supabase/.temp/
+supabase/sbp_*
+
 # Editor and OS files
 .DS_Store
 Thumbs.db

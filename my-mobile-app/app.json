@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Digital School Library Mobile",
+    "slug": "digital-school-library-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

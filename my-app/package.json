@@ -7,12 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "deploy:functions": "node supabase/deploy-functions.js",
-    "deploy:functions:ps": "pwsh -File supabase/deploy-functions.ps1",
+    "deploy:functions": "node supabase/deploy-edge-functions.js",
+    "deploy:functions:ps": "pwsh -File supabase/deploy-edge-functions.ps1",
     "deploy:db-function": "node supabase/deploy-db-function.js",
-    "deploy:db-function:ps": "pwsh -File supabase/deploy-db-function.ps1"
+    "deploy:db-functions": "node supabase/deploy-db-functions.js",
+    "deploy:db-function:ps": "pwsh -File supabase/deploy-db-function.ps1",
+    "deploy:db-functions:ps": "pwsh -File supabase/deploy-db-functions.ps1"
   },
   "dependencies": {
+    "@shared/ui": "file:../shared/ui",
     "@supabase/supabase-js": "^2.103.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
